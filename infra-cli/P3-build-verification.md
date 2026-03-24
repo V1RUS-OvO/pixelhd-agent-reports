@@ -100,6 +100,16 @@ location of your Java installation.
   - 持续在本报告记录 Desktop / Android / Tests 的验证结果与已知缺口。
 - 本次同步报告未新增源码仓库改动，属于指令对齐与执行准备状态更新。
 
+## Director Sync (2026-03-24-02)
+
+- 已执行 `director-commands-20260324-02`，本次改动属于“infra-cli & android-cli：继续围绕 `./gradlew pixelhdAndroidDev` 排查 Android 构建问题”的准备同步。
+- 已重新读取 `AGENT_COMMS_PROTOCOL.md` 与最新调度令，并确认本轮 infra-cli 最高优先级不再分散，集中在 Android Debug 构建链路排障。
+- 当前 infra-cli 下一步聚焦项：
+  - 继续排查 `./gradlew pixelhdAndroidDev` 在 Android 资源/打包阶段的失败原因；
+  - 如构建恢复，再补充 `docs/engineering/dev-quickstart.md` 中 PixelHD Destroy 开发/测试循环；
+  - 审阅 `.github/workflows/*.yml`，核对 tests 模块与 PixelHD 测试覆盖情况，并把结论补充到本报告。
+- 本次同步仅更新调度认知与执行优先级，尚未新增 `pixelhd` 源码改动。
+
 ## Android Build (android-cli)
 - ANDROID_SDK_ROOT / ANDROID_HOME：`C:/Users/KAKA/AppData/Local/Android/Sdk`
 - adb version：
