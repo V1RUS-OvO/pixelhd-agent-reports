@@ -99,3 +99,15 @@ location of your Java installation.
   - 审阅 `C:/Users/KAKA/pixelhd/.github/workflows/*.yml`，确认 tests 模块与 PixelHD 测试覆盖情况；
   - 持续在本报告记录 Desktop / Android / Tests 的验证结果与已知缺口。
 - 本次同步报告未新增源码仓库改动，属于指令对齐与执行准备状态更新。
+
+## Android Build (android-cli)
+- ANDROID_SDK_ROOT / ANDROID_HOME：`C:/Users/KAKA/AppData/Local/Android/Sdk`
+- adb version：
+  ```text
+  Android Debug Bridge version 1.0.41
+  Version 37.0.0-14910828
+  Installed as C:\Users\KAKA\AppData\Local\Microsoft\WinGet\Packages\Google.PlatformTools_Microsoft.Winget.Source_8wekyb3d8bbwe\platform-tools\adb.exe
+  ```
+- ./gradlew pixelhdAndroidDev：失败，Android 模块已参与构建，当前阻塞点为 `:pixelhd:android:minifyDebugWithR8`，关键错误：
+  - R8 处理 `C:\Users\KAKA\pixelhd\android\build\intermediates\merged_java_res\debug\base.jar` 时抛出 `NoSuchFileException`，提示该文件不存在；
+  - 说明当前环境下 Android SDK 与 Gradle 配置已生效，但 Debug 构建在资源压缩/混淆阶段仍有构建产物缺失问题，后续需要针对 R8 / merged_java_res 的生成流程进一步排查。
