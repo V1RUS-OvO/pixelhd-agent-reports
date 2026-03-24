@@ -121,3 +121,34 @@ location of your Java installation.
 - ./gradlew pixelhdAndroidDev：失败，Android 模块已参与构建，当前阻塞点为 `:pixelhd:android:minifyDebugWithR8`，关键错误：
   - R8 处理 `C:\Users\KAKA\pixelhd\android\build\intermediates\merged_java_res\debug\base.jar` 时抛出 `NoSuchFileException`，提示该文件不存在；
   - 说明当前环境下 Android SDK 与 Gradle 配置已生效，但 Debug 构建在资源压缩/混淆阶段仍有构建产物缺失问题，后续需要针对 R8 / merged_java_res 的生成流程进一步排查。
+
+## Android Dev Task Fix (2026-03-24)
+
+- 已执行 `director-commands-20260324-02`，本次改动属于“infra-cli & android-cli：继续围绕 `./gradlew pixelhdAndroidDev` 排查 Android 构建问题”。
+- 做了什么：
+  - 在 `C:/Users/KAKA/pixelhd/build.gradle` 为 `pixelhdAndroidDev` 增加设备检测逻辑；
+  - 让该快捷任务在检测到 `adb devices` 有真实连接设备/模拟器时继续执行 `android:installDebug`，无设备时自动退化为仅执行 `android:assembleDebug`；
+  - 更新 `C:/Users/KAKA/pixelhd/docs/engineering/dev-quickstart.md`，把新的 Android 开发循环写入文档。
+- 改动文件：
+  - `C:/Users/KAKA/pixelhd/build.gradle`
+  - `C:/Users/KAKA/pixelhd/docs/engineering/dev-quickstart.md`
+- 如何复现 / 验证：
+  ```bash
+  cd C:/Users/KAKA/pixelhd
+  ./gradlew android:assembleDebug --no-daemon --stacktrace
+  ./gradlew pixelhdAndroidDev --no-daemon
+  adb devices
+  ```
+- 验证结果：
+  - `./gradlew android:assembleDebug --no-daemon --stacktrace`：成功；此前 `mergeDebugResources` / R8 阶段失败在本机未复现。
+  - `./gradlew pixelhdAndroidDev --no-daemon`：成功；当前无连接设备时不再因为 `installDebug` 报 `No connected devices!` 而整体失败。
+  - `adb devices`：当前为空，因此本次仅验证到 APK 构建成功，未执行真机安装。
+  - 产物：`C:/Users/KAKA/pixelhd/android/build/outputs/apk/debug/android-debug.apk`
+- CI 审阅：
+  - `C:/Users/KAKA/pixelhd/.github/workflows/pr.yml` 已执行 `./gradlew tests:test --stacktrace --rerun` 和 `./gradlew android:assembleDebug`；
+  - `C:/Users/KAKA/pixelhd/.github/workflows/push.yml` 已执行 `./gradlew tests:test --rerun --stacktrace`；
+  - 当前 CI 已覆盖 `tests` 模块，但尚未显式只跑 `mindustry.game.pixelhd.*` 过滤集；若后续 PixelHD 测试数量扩大，可补一条定向任务提高信号可见度。
+- 源码仓库提交：`fa91b52817`（`infra: 优化 Android 开发任务`）
+- TODO：
+  - 连接真机或模拟器后再次执行 `./gradlew pixelhdAndroidDev`，补记 `installDebug` 与实际运行结果；
+  - 待 game-cli / content-cli / maps-cli 第一轮功能落地后，补充 `:tests:test --tests "mindustry.game.pixelhd.*"` 的最新验证结论。
