@@ -85,3 +85,42 @@
 - 结果：maps-cli 已提供 2 张可供 game-cli / qa-cli 使用的 PixelHD destroy_0_1 测试地图。
 - 代码仓库本地提交：`e37a69e040` `feat: 添加 PixelHD 测试地图生成器`
 - TODO：待 game-cli 的 Destroy -> Extraction 闭环进一步稳定后，用这两张地图补一次桌面端实际进图验证与截图记录。
+
+## 2026-03-24 / director-commands-20260324-03
+
+### 本次执行
+- 已再次同步通讯仓库并读取 `AGENT_COMMS_PROTOCOL.md`、`director-commands-20260324-03.md`。
+- 已执行 Desktop 回归准备脚本：`bash "tools/pixelhd-desktop-regression.sh" "PixelHD_Destroy_Test"`
+- 已执行 PixelHD 测试命令：`./gradlew :tests:test --tests "mindustry.game.pixelhd.*"`
+- 已执行 Desktop 开发构建启动：`./gradlew pixelhdDesktopDev`
+
+### 本轮验证结果
+- `pixelhdDesktopDev` 可成功编译并启动桌面客户端；30s 冒烟窗口内完成 SDL/OpenGL/音频初始化并进入主程序加载阶段，说明本机可加载本轮地图包进行后续人工回归。
+- `./gradlew :tests:test --tests "mindustry.game.pixelhd.*"` 当前失败，阻塞点不在地图资源本身，而在现有测试源码编译：
+  - `tests/src/test/java/mindustry/game/pixelhd/PixelHDMissionLoaderTest.java`
+  - `tests/src/test/java/mindustry/game/pixelhd/PixelHDStratagemsTest.java`
+  - 典型报错：`arc.util.Events` 找不到、`PixelHDMissionLoader` / `PixelHDStratagems` 找不到、`Map.copy()` 不存在。
+- 当前 CLI 环境可完成“桌面启动冒烟”，但无法在无交互图形控制下直接完成一整局手动 Destroy -> Extraction 成功/失败流程；该步骤需要 qa-cli / 人工桌面操作继续完成，并以本节命令作为起点。
+
+### 地图建议补充
+- `PixelHD_Destroy_Test`
+  - 推荐玩家数：`1-2`
+  - 适配判断：适合单人或双人跑通 Destroy -> Extraction 成功路径，适合作为 game-cli / content-cli 的基础验证图。
+  - 风险与建议：
+    - 给 `game-cli`：优先用此图验证 extraction_unlocked / mission_success / mission_failed 的状态切换；地形简单，便于排除逻辑噪声。
+    - 给 `content-cli`：HUD 文案与撤离区域提示在此图最容易观察，建议先用它检查阶段切换与按钮遮挡。
+    - 给 `qa-cli`：适合作为首张回归图，先跑成功路径，再人为拖延/弃防测试失败路径。
+- `PixelHD_Destroy_Hard`
+  - 推荐玩家数：`2-4`
+  - 适配判断：更适合多人或高压场景，适合验证更长推进与更复杂撤离路径下的 UI 可读性与失败链路。
+  - 风险与建议：
+    - 给 `game-cli`：重点观察 defaultTeam 核心承压时 mission_failed 触发是否过早/过晚。
+    - 给 `content-cli`：路径更长时应确认 Extraction 提示足够醒目，避免玩家找不到撤离点。
+    - 给 `qa-cli`：适合复现多人/手机端路径拥堵、视野压迫、撤离提示不明显等问题。
+
+### 当前问题
+- 由于测试命令未通过，maps-cli 无法把“地图可用性”与“PixelHD 自动化逻辑”一起判定为绿；当前地图资源已就位，但需等待 game-cli 修复相关 PixelHD 测试编译问题。
+- 由于 CLI 会话不具备图形交互控制，本轮只能确认 Desktop 可启动到主程序，不能在本会话内独立完成整局手打记录。
+
+### 下一步
+- 等 `mindustry.game.pixelhd.*` 测试恢复后，按同样命令重新跑一遍，并与 qa-cli 对齐两张图的成功/失败实际结果。
