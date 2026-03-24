@@ -47,3 +47,41 @@
 ## Progress
 - 2026-03-24：已确认身份为 `maps-cli`，已同步通讯仓库最新内容。
 - 当前状态：已读取本阶段目标，待进入 `C:/Users/KAKA/pixelhd` 与地图资源流程，创建并登记测试地图。
+
+## 2026-03-24 / director-commands-20260324-02 / 20260324-ALL
+
+### 本次完成
+- 已在 `C:/Users/KAKA/pixelhd` 新增地图生成器与任务，基于内置地图产出 2 张 PixelHD 测试地图，并同步安装到本机 Mindustry 自定义地图目录。
+- 已生成并验证以下地图均带有 `pixelhd.mode = destroy_0_1`：
+  - `PixelHD_Destroy_Test`
+    - file: `tests/src/test/resources/pixelhd/maps/pixelhd_destroy_test.msav`
+    - source: `serpulo/extractionOutpost`
+    - 特征：清晰主路径、敌方 core 位于前线、适合走通 Destroy -> Extraction 冒烟流程
+    - tags: `pixelhd.mode=destroy_0_1`, `pixelhd.profile=clear lane, enemy core forward, low pressure`, `pixelhd.source=serpulo/extractionOutpost`
+  - `PixelHD_Destroy_Hard`
+    - file: `tests/src/test/resources/pixelhd/maps/pixelhd_destroy_hard.msav`
+    - source: `serpulo/planetaryTerminal`
+    - 特征：路径更长、地形更复杂、敌压更高，适合多人/高压回归
+    - tags: `pixelhd.mode=destroy_0_1`, `pixelhd.profile=longer approach, harder terrain, higher pressure`, `pixelhd.source=serpulo/planetaryTerminal`
+
+### 代码与资源改动
+- `C:/Users/KAKA/pixelhd/tools/src/mindustry/tools/PixelHDMapPackGenerator.java`
+- `C:/Users/KAKA/pixelhd/tools/build.gradle`
+- `C:/Users/KAKA/pixelhd/tests/src/test/resources/pixelhd/maps/pixelhd_destroy_test.msav`
+- `C:/Users/KAKA/pixelhd/tests/src/test/resources/pixelhd/maps/pixelhd_destroy_hard.msav`
+- 本机安装副本：`C:/Users/KAKA/AppData/Roaming/Mindustry/maps/pixelhd_destroy_test.msav`
+- 本机安装副本：`C:/Users/KAKA/AppData/Roaming/Mindustry/maps/pixelhd_destroy_hard.msav`
+
+### 复现 / 验证
+- 在源码仓库执行：`./gradlew :tools:generatePixelHDMaps`
+- 生成任务会：
+  - 从内置地图载入源图；
+  - 重写 `name/description/pixelhd.*` tags；
+  - 输出到 `tests/src/test/resources/pixelhd/maps/`；
+  - 同步复制到 `C:/Users/KAKA/AppData/Roaming/Mindustry/maps/`
+- 本轮实际验证结果：`./gradlew :tools:generatePixelHDMaps` 运行成功，生成目录与本机地图目录均已出现 2 个 `.msav` 文件。
+
+### 结果 / TODO
+- 结果：maps-cli 已提供 2 张可供 game-cli / qa-cli 使用的 PixelHD destroy_0_1 测试地图。
+- 代码仓库本地提交：`e37a69e040` `feat: 添加 PixelHD 测试地图生成器`
+- TODO：待 game-cli 的 Destroy -> Extraction 闭环进一步稳定后，用这两张地图补一次桌面端实际进图验证与截图记录。
