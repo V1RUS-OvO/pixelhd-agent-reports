@@ -152,3 +152,23 @@ location of your Java installation.
 - TODO：
   - 连接真机或模拟器后再次执行 `./gradlew pixelhdAndroidDev`，补记 `installDebug` 与实际运行结果；
   - 待 game-cli / content-cli / maps-cli 第一轮功能落地后，补充 `:tests:test --tests "mindustry.game.pixelhd.*"` 的最新验证结论。
+
+## Execution Pass (2026-03-24-03)
+
+- 已执行 `director-commands-20260324-03`，本次动作属于“infra-cli & android-cli：在有真机或模拟器连接时执行 Android 安装验证”的前置检查。
+- 做了什么：
+  - 在 `C:/Users/KAKA/pixelhd-agent-reports` 执行 `git pull` 并读取最新协议/调度令；
+  - 在 `C:/Users/KAKA/pixelhd` 执行 `adb devices -l` 检查连接设备；
+  - 在 `C:/Users/KAKA/pixelhd` 执行 `git status --short` 检查源码仓库是否干净。
+- 如何复现 / 验证：
+  ```bash
+  cd C:/Users/KAKA/pixelhd
+  adb devices -l
+  git status --short
+  ```
+- 结果：
+  - 当前 `adb devices -l` 返回空列表，未检测到真机或模拟器，因此尚不能完成 `android:installDebug` 与首局 Destroy+Extraction 实机验证。
+  - `C:/Users/KAKA/pixelhd` 当前工作区干净，没有未提交改动。
+- TODO：
+  - 一旦设备接入，立即执行：`./gradlew pixelhdAndroidDev --no-daemon --stacktrace`；
+  - 在本报告中补充设备型号、`installDebug` 结果与首局运行表现。
