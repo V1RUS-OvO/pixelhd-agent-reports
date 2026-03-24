@@ -13,6 +13,44 @@
   - 结果：QA 准备工作已进入可执行状态，回归记录模板已标准化。
   - TODO：待 maps-cli 提供最终地图后，用该脚本串起 `./gradlew :tests:test --tests "mindustry.game.pixelhd.*"` 与 `./gradlew pixelhdDesktopDev`，补录实际结果。
 
+## 2026-03-24 执行阶段回归结果（director-commands-20260324-03）
+- 已按调度令执行：
+  - `bash "tools/pixelhd-desktop-regression.sh" PixelHD_Destroy_Test`
+  - `./gradlew :tests:test --tests "mindustry.game.pixelhd.*" --no-daemon`
+  - `./gradlew :tests:test --tests "PixelHDStratagemsTest.supportCalls_doNotThrow" --no-daemon`
+  - `./gradlew :tests:test --tests "PixelHDMissionLoaderTest.isPixelHDMission_falseByDefault" --no-daemon`
+- 已在 `C:/Users/KAKA/pixelhd` 新增实际结果文件：
+  - `docs/qa/pixelhd-destroy-extraction-results-20260324.md`
+
+### 实际结果摘要
+- 场景 1（Destroy 成功 + 撤离成功）：失败 / 阻塞
+  - `PixelHDMissionLoaderTest.destroyObjective_unlocksExtractionAfterTargetDestroyed()` 与 `extractObjective_setsMissionSuccessAndFiresGameOver()` 在当前本地工作树下失败。
+  - 关键信息：日志报 `[PixelHD] No enemy core found for destroy mission on map 'Ground Zero'.`，说明自动化成功链路尚未跑通。
+- 场景 2（Destroy 成功 + 撤离失败）：阻塞
+  - 当前未见稳定可执行的 `mission_failed` 自动化结果；在成功链路未通过前，本轮未继续做 GUI 手动失败路径验证。
+- 场景 3（异常配置 / 缺失 tag）：部分通过
+  - `PixelHDMissionLoaderTest.isPixelHDMission_falseByDefault` 通过，说明“未打 PixelHD tag 时不进入 PixelHD 模式”的基础门控正常。
+- Stratagem 基础冒烟：通过
+  - `PixelHDStratagemsTest.supportCalls_doNotThrow` 通过，3 个支援入口在测试环境中调用不抛异常。
+
+### 按责任方归类的问题
+- `game-cli`
+  - Critical：Destroy 成功链路自动化未跑通，目标 core 未被正确纳入测试基线，阻塞 extraction success 回归。
+  - Major：尚缺稳定的 `mission_failed` 分支验证结果，导致撤离失败回归无法闭环。
+- `maps-cli`
+  - 当前地图资源文件已存在：`pixelhd_destroy_test.msav` / `pixelhd_destroy_hard.msav`。
+  - 但本轮阻塞点不在地图文件缺失，而在 game-cli 当前测试基线与地图/测试载入方式尚未对齐。
+- `content-cli`
+  - Stratagem 冒烟调用通过，但 HUD 阶段切换与按钮遮挡仍需等 success/failure 链路跑通后做 GUI 验证。
+- `infra-cli` / `android-cli`
+  - 本轮仅做 Desktop 回归，未覆盖 Android 实机结果。
+
+### 下一步
+- 待 game-cli 修复 PixelHD success / failure 自动化后，qa-cli 立即重跑：
+  - `PixelHD_Destroy_Test`：正向链路
+  - `PixelHD_Destroy_Hard`：高压与失败链路
+- 若下一轮可稳定进入桌面战局，再补充 HUD 文案、撤离区域可识别性与 Stratagem 视觉效果的人工观察记录。
+
 ## 当前状态
 - 已同步 `director-commands-20260324.md`，qa-cli 当前目标为 Destroy -> Extraction -> 成功/失败 + HUD/Stratagem 回归场景整理。
 - 已完成本轮 QA 场景设计与观察点整理，供 desktop 和 Android 共用。
