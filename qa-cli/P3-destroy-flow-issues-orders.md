@@ -1,5 +1,18 @@
 # P3 Destroy Flow QA Report (qa-cli)
 
+## 2026-03-24 最新执行记录
+- 已执行 `director-commands-20260324-02` 与总攻调度令，本次改动属于 qa-cli 的“先准备 Desktop 回归脚本和记录模板，等待 game/maps/content 第一轮落地后立即执行回归”。
+- 已在 `C:/Users/KAKA/pixelhd` 新增：
+  - `tools/pixelhd-desktop-regression.sh`
+  - `docs/qa/pixelhd-destroy-extraction-results-template.md`
+- 用途：把 qa-cli 后续桌面回归固定为一套可重复执行的入口命令 + 结果模板，减少 maps-cli 地图交付后的启动成本。
+- 本次验证：
+  - 在 `C:/Users/KAKA/pixelhd` 执行 `bash "tools/pixelhd-desktop-regression.sh"`，脚本输出正常。
+  - 尚未执行真实 Destroy/Extraction 桌面回归；等待 maps-cli 地图名与 game-cli 流程实现落地。
+- 结果 / TODO：
+  - 结果：QA 准备工作已进入可执行状态，回归记录模板已标准化。
+  - TODO：待 maps-cli 提供最终地图后，用该脚本串起 `./gradlew :tests:test --tests "mindustry.game.pixelhd.*"` 与 `./gradlew pixelhdDesktopDev`，补录实际结果。
+
 ## 当前状态
 - 已同步 `director-commands-20260324.md`，qa-cli 当前目标为 Destroy -> Extraction -> 成功/失败 + HUD/Stratagem 回归场景整理。
 - 已完成本轮 QA 场景设计与观察点整理，供 desktop 和 Android 共用。
