@@ -89,3 +89,13 @@ location of your Java installation.
   - `JAVA_HOME`：`C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot`
   - `ANDROID_HOME`：`C:/Users/KAKA/AppData/Local/Android/Sdk`（本次构建命令中已设置）
   - `ANDROID_SDK_ROOT`：`C:/Users/KAKA/AppData/Local/Android/Sdk`（本次构建命令中已设置）
+
+## Director Sync (2026-03-24)
+
+- 已按协作要求在 `C:/Users/KAKA/pixelhd-agent-reports` 执行 `git pull`，当前通讯仓库同步正常。
+- 已重新确认当前身份为 `infra-cli`，并读取最新总监文件 `director-commands-20260324.md`。
+- 当前 infra-cli 后续执行项保持不变：
+  - 更新 `C:/Users/KAKA/pixelhd/docs/engineering/dev-quickstart.md`，补充 PixelHD Destroy 开发/测试循环；
+  - 审阅 `C:/Users/KAKA/pixelhd/.github/workflows/*.yml`，确认 tests 模块与 PixelHD 测试覆盖情况；
+  - 持续在本报告记录 Desktop / Android / Tests 的验证结果与已知缺口。
+- 本次同步报告未新增源码仓库改动，属于指令对齐与执行准备状态更新。
